@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.jzjr.springbootshiro.dao.UserDao">
+
+    <insert id="saveUser" parameterType="com.jzjr.springbootshiro.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO T_USER (ID, USER_NAME, PASS_WORD, SALT, CREATED_DATE, UPDATED_DATE)
+        VALUES (#{id},#{userName},#{passWord},#{salt},#{createdDate},#{updatedDate}
+               )
+    </insert>
+
+    <select id="selectUserByUserName" resultType="com.jzjr.springbootshiro.entity.User">
+       SELECT * FROM T_USER t WHERE t.USER_NAME = #{principal}
+    </select>
+</mapper>

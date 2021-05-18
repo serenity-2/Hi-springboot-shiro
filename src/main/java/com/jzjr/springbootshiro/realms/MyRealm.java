@@ -2,7 +2,6 @@ package com.jzjr.springbootshiro.realms;
 
 import com.jzjr.springbootshiro.entity.User;
 import com.jzjr.springbootshiro.service.UserService;
-import io.netty.util.internal.ObjectUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;

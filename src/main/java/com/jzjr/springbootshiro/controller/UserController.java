@@ -7,6 +7,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -38,9 +39,12 @@ public class UserController {
     }
 
     @RequestMapping("/register")
-    public String register(String username,String password){
+    public String register(String username, String password) {
+        if (ObjectUtils.isEmpty(username) && ObjectUtils.isEmpty(password)) {
+            return "redirect:/register.jsp";
+        }
         try {
-            userService.register(username,password);
+            userService.register(username, password);
             return "redirect:/login.jsp";
         } catch (Exception e) {
             e.printStackTrace();

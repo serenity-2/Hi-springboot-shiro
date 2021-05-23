@@ -2,14 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="com.jzjr.springbootshiro.dao.UserDao">
+    <resultMap id="UserMap" type="com.jzjr.springbootshiro.entity.User">
+        <result column="ID" property="id"/>
+        <result column="USER_NAME" property="userName"/>
+        <result column="PASS_WORD" property="passWord"/>
+        <result column="SALT" property="salt"/>
+        <result column="CREATED_DATE" property="createdDate"/>
+        <result column="UPDATED_DATE" property="updatedDate"/>
+        <collection property="roles" javaType="java.util.List" ofType="Role">
+            <result column="ROLE_ID" property="id"/>
+            <result column="NAME" property="name"/>
+        </collection>
+    </resultMap>
 
     <insert id="saveUser" parameterType="com.jzjr.springbootshiro.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO T_USER (ID, USER_NAME, PASS_WORD, SALT, CREATED_DATE, UPDATED_DATE)
-        VALUES (#{id},#{userName},#{passWord},#{salt},#{createdDate},#{updatedDate}
-               )
+        VALUES (#{id}, #{userName}, #{passWord}, #{salt}, #{createdDate}, #{updatedDate})
     </insert>
 
-    <select id="selectUserByUserName" resultType="com.jzjr.springbootshiro.entity.User">
-       SELECT * FROM T_USER t WHERE t.USER_NAME = #{principal}
+    <select id="selectUserByUserName" resultMap="UserMap">
+        SELECT u.*,r.ID AS ROLE_ID,r.`NAME`
+        FROM T_USER u
+                 LEFT JOIN T_USER_ROLE ur
+                           ON u.ID = ur.USER_ID
+                 LEFT JOIN T_ROLE r
+                           on r.ID = ur.ROLE_ID
+        where u.USER_NAME = #{principal};
+    </select>
+
+    <select id="selectPermissionByRoleId" resultType="com.jzjr.springbootshiro.entity.Permission">
+        SELECT p.*, r.`NAME` AS roleName
+        FROM T_ROLE r
+                 LEFT JOIN T_ROLE_PERM rp
+                           on r.ID = rp.ROLE_ID
+                 LEFT JOIN T_PERM p
+                           on rp.PERM_ID = p.ID
+        WHERE r.ID = #{id};
     </select>
 </mapper>

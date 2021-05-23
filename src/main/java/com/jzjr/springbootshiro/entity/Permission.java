@@ -6,24 +6,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class Permission {
     private String id;
 
-    private String userName;
+    private String name;
 
-    private String passWord;
+    private String url;
 
-    private String salt;
+    private Date created_date;
 
-    private List<Role>roles;
-
-    private Date createdDate;
-
-    private Date updatedDate;
+    private Date updated_date;
 }

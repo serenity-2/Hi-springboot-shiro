@@ -1,4 +1,4 @@
-package com.jzjr.springbootshiro.realms;
+package com.jzjr.springbootshiro.shiro.realms;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.jzjr.springbootshiro.entity.Permission;

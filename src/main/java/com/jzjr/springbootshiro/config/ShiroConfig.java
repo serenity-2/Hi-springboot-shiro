@@ -1,6 +1,5 @@
 package com.jzjr.springbootshiro.config;
 
-import com.jzjr.springbootshiro.realms.MyRealm;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -8,7 +7,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import org.springframework.data.redis.cache.RedisCacheManager;
+import com.jzjr.springbootshiro.shiro.realms.MyRealm;
 import java.util.HashMap;
 
 @Configuration
@@ -43,6 +43,13 @@ public class ShiroConfig {
         //设置散列次数
         hashedCredentialsMatcher.setHashIterations(1024);
         myRealm.setCredentialsMatcher(hashedCredentialsMatcher);
+        //开启缓存管理
+        myRealm.setCacheManager(new RedisCacheManager());
+        myRealm.setCachingEnabled(true);//开启全局缓存
+        myRealm.setAuthenticationCachingEnabled(true);//认证认证缓存
+        myRealm.setAuthenticationCacheName("authenticationCache");
+        myRealm.setAuthorizationCachingEnabled(true);//开启授权缓存
+        myRealm.setAuthorizationCacheName("authorizationCache");
         return myRealm;
     }
 }

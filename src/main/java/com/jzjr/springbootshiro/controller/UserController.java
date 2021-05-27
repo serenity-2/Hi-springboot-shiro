@@ -26,7 +26,6 @@ public class UserController {
             e.printStackTrace();
             System.out.println("用户名或密码错误");
             return "redirect:/login.jsp";
-
         }
         return "redirect:/index.jsp";
     }

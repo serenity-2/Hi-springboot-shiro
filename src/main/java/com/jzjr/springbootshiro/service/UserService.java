@@ -11,4 +11,6 @@ public interface UserService {
     User findUserByUserName(String principal);
 
     List<Permission> findPermissionsByRoleId(String id);
+
+    String generateToken(String userName);
 }

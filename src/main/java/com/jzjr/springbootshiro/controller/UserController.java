@@ -1,34 +1,40 @@
 package com.jzjr.springbootshiro.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.jzjr.springbootshiro.entity.Result;
 import com.jzjr.springbootshiro.service.UserService;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
 
     @RequestMapping("/login")
-    public String login(String username, String password) {
+    public String login(String username, String password, HttpServletRequest request, HttpServletResponse response) {
         Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
         try {
-            subject.login(token);
-        } catch (AuthenticationException e) {
+            subject.login(usernamePasswordToken);
+            String jwtToken = userService.generateToken(username);
+            response.setHeader("x-auth-token",jwtToken);
+        } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("用户名或密码错误");
-            return "redirect:/login.jsp";
+            return JSON.toJSONString(new Result().setCode(200).setMessage("用户名或密码错误"));
 
         }
-        return "redirect:/index.jsp";
+        return JSON.toJSONString(new Result().setCode(200).setMessage("登陆成功"));
     }
 
     @RequestMapping("/logout")

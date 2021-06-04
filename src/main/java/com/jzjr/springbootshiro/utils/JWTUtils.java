@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Slf4j
 public class JWTUtils {
-    public static final long EXPITE_TIME = 5 * 60 * 1000;
+    public static final long EXPITE_TIME = 10 * 60 * 1000;
     public static final String SECRET = "secret";
     /**
      * 生成签名,expireTime后过期

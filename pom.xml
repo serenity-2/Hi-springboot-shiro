@@ -62,7 +62,12 @@
             <artifactId>shiro-spring-boot-starter</artifactId>
             <version>1.4.0</version>
         </dependency>
-
+        <!--jwt-->
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.16.0</version>
+        </dependency>
         <!--引入mybatis-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -96,11 +101,6 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.3.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

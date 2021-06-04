@@ -36,18 +36,30 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
-        if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name())) //对于OPTION请求做拦截，不做token校验
+        //对于OPTION请求做拦截，不做token校验,因为option请求是预检请求，是浏览器给我们加上的，后端并没有做任何操作
+        if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name()))
             return false;
-
         return super.preHandle(request, response);
     }
 
+    /**
+     *  CORS跨域处理
+     * @param request
+     * @param response
+     */
     @Override
     protected void postHandle(ServletRequest request, ServletResponse response){
         this.fillCorsHeader(WebUtils.toHttp(request), WebUtils.toHttp(response));
         request.setAttribute("jwtShiroFilter.FILTERED", true);
     }
 
+    /**
+     *验证用户是否存在以及密码是否正确
+     * @param var1
+     * @param var2
+     * @param var3
+     * @return
+     */
     @Override
     protected boolean isAccessAllowed(ServletRequest var1, ServletResponse var2, Object var3){
         if (this.isLoginRequest(var1, var2))
@@ -66,7 +78,7 @@ public class JwtAuthFilter extends AuthenticatingFilter {
     }
 
     /**
-     * 这里重写了父类的方法，使用我们自己定义的Token类，提交给shiro。这个方法返回null的话会直接抛出异常，进入isAccessAllowed（）的异常处理逻辑。
+     * 这里重写了父类的方法，获取请求头token，如果返回null的话会直接抛出异常，进入isAccessAllowed（）的异常处理逻辑。
      *
      * @param servletRequest
      * @param servletResponse
@@ -97,12 +109,26 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         return false;
     }
 
+    /**
+     * CORS跨域处理
+     * @param httpServletRequest
+     * @param httpServletResponse
+     */
     protected void fillCorsHeader(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         httpServletResponse.setHeader("Access-Control-Allow-Origin", httpServletRequest.getHeader("Origin"));
         httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,HEAD");
         httpServletResponse.setHeader("Access-Control-Allow-Headers", httpServletRequest.getHeader("Access-Control-Request-Headers"));
     }
 
+    /**
+     * token验证成功后执行，判断是否需要刷新token
+     * @param token
+     * @param subject
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
         HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
@@ -133,6 +159,11 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         return StringUtils.removeStart(header, "Bearer ");
     }
 
+    /**
+     * 用户信息验证不通过执行，返回失败信息
+     * @param response
+     * @param message
+     */
     public void publicLoginErrorController(ServletResponse response,String message){
     HttpServletResponse httpServletResponse = (HttpServletResponse) response;
     //解决中文乱码

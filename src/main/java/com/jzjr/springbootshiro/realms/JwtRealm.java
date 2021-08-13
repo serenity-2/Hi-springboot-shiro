@@ -29,6 +29,7 @@ public class JwtRealm extends AuthorizingRealm {
      */
     @Override
     public boolean supports(AuthenticationToken token) {
+        log.info("support:{}",token instanceof JwtToken);
         return token instanceof JwtToken;
     }
 

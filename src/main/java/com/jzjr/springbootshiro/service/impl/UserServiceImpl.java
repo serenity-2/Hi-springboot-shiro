@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         Permission permission = new Permission("1", "article:admin:*", "/article/admin/", new Date(), new Date());
         Role role = new Role("1", "admin", Arrays.asList(permission));
         List<Role> roles = Arrays.asList(role);
-        User daisy = new User("1", "Daisy", "22f2d99d8d2d4d69bb9d457c747c8c33", "19aaf", roles, new Date(), new Date());
+        User daisy = new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97", roles, new Date(), new Date());
         userMap.put("Daisy",daisy);
         return (User) userMap.get(principal);
     }

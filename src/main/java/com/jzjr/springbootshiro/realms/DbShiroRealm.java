@@ -5,6 +5,7 @@ import com.jzjr.springbootshiro.entity.Permission;
 import com.jzjr.springbootshiro.entity.Role;
 import com.jzjr.springbootshiro.entity.User;
 import com.jzjr.springbootshiro.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -12,9 +13,10 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
+
 import java.util.List;
 
+@Slf4j
 public class DbShiroRealm extends AuthorizingRealm {
 
     protected UserService userService;
@@ -30,6 +32,7 @@ public class DbShiroRealm extends AuthorizingRealm {
      */
     @Override
     public boolean supports(AuthenticationToken token){
+        log.info("support:{}", token instanceof UsernamePasswordToken);
         return token instanceof UsernamePasswordToken;
     }
 
@@ -71,10 +74,7 @@ public class DbShiroRealm extends AuthorizingRealm {
         String principal = (String) authenticationToken.getPrincipal();
         //根据用户名查询用户
         User user = userService.findUserByUserName(principal);
-        if (!ObjectUtils.isEmpty(user)){
-            //密码的校验无需我们自己比较,shiro的凭证匹配器可以帮我们实现
-            return new SimpleAuthenticationInfo(user.getUserName(),user.getPassWord(),ByteSource.Util.bytes(user.getSalt()),this.getName());
-        }
-        return null;
+        //密码的校验无需我们自己比较,shiro的凭证匹配器可以帮我们实现
+        return new SimpleAuthenticationInfo(user.getUserName(),user.getPassWord(),ByteSource.Util.bytes(user.getSalt()),this.getName());
     }
 }

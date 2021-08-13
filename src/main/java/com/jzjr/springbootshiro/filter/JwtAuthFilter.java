@@ -39,6 +39,8 @@ public class JwtAuthFilter extends AuthenticatingFilter {
         //对于OPTION请求做拦截，不做token校验,因为option请求是预检请求，是浏览器给我们加上的，后端并没有做任何操作
         if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name()))
             return false;
+       if (httpServletRequest.getRequestURI().equals("/shiro/user/reister"))
+           return true;
         return super.preHandle(request, response);
     }
 

@@ -5,6 +5,7 @@ import com.jzjr.springbootshiro.filter.AnyRolesAuthorizationFilter;
 import com.jzjr.springbootshiro.filter.JwtAuthFilter;
 import com.jzjr.springbootshiro.realms.DbShiroRealm;
 import com.jzjr.springbootshiro.realms.JwtRealm;
+import com.jzjr.springbootshiro.realms.VerifyRealm;
 import com.jzjr.springbootshiro.service.UserService;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -34,7 +35,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
         shiroFilterFactoryBean.setFilterChainDefinitionMap(shiroFilterChainDefinition().getFilterChainMap());
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
-        filters.put("authcToken", createJwtFilter(userService));
+        filters.put("authcToken", createRolesFilter());
         filters.put("anyRole", createRolesFilter());
         return shiroFilterFactoryBean;
     }
@@ -43,22 +44,24 @@ public class ShiroConfig {
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");
+        chainDefinition.addPathDefinition("/user/verityCode/login", "noSessionCreation,anon");
         //做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
         chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
         chainDefinition.addPathDefinition("/image/**", "anon");
         //只允许admin或manager角色的用户访问
-        chainDefinition.addPathDefinition("/article/admin", "noSessionCreation,authcToken,anyRole[admin,manager]");
+        chainDefinition.addPathDefinition("/article/admin", "noSessionCreation,anyRole[admin,manager]");
         chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
-        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
+//        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
         // 默认进行用户鉴权
-        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
+//        chainDefinition.addPathDefinition("/**", "noSessionCreation,authcToken");
         return chainDefinition;
     }
 
     @Bean
     public DefaultWebSecurityManager getDefaultWebSecurityManager(UserService userService) {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
-        defaultWebSecurityManager.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
+//        defaultWebSecurityManager.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
+        defaultWebSecurityManager.setRealm(getVerifyRealm(userService));
 //        defaultWebSecurityManager.setCacheManager(new RedisCacheManager());
         return defaultWebSecurityManager;
     }
@@ -89,21 +92,31 @@ public class ShiroConfig {
     }
 
     /**
+     * 用于短信验证码认证的realm
+     */
+    @Bean
+    public Realm getVerifyRealm(UserService userService) {
+        VerifyRealm verifyRealm = new VerifyRealm(userService);
+        return verifyRealm;
+    }
+
+    /**
      * 初始化Authenticator
      */
     @Bean
     public Authenticator authenticator(UserService userService) {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         //设置两个Realm，一个用于用户登录验证和访问权限获取；一个用于jwt token的认证
-        authenticator.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
+//        authenticator.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
+        authenticator.setRealms(Arrays.asList(getVerifyRealm(userService)));
         //设置多个realm认证策略，一个成功即跳过其它的
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         return authenticator;
     }
 
-    public JwtAuthFilter createJwtFilter(UserService userService) {
-        return new JwtAuthFilter(userService);
-    }
+//    public JwtAuthFilter createJwtFilter(UserService userService) {
+//        return new JwtAuthFilter(userService);
+//    }
 
     protected AnyRolesAuthorizationFilter createRolesFilter(){
         return new AnyRolesAuthorizationFilter();

@@ -6,14 +6,19 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jzjr.springbootshiro.utils.JWTUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
+import javax.annotation.Resource;
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 class SpringbootShiroApplicationTests {
-
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
     @Test
     void contextLoads() {
         long expireTime = 1000*30;
@@ -29,12 +34,12 @@ class SpringbootShiroApplicationTests {
 
     @Test
     public void test(){
-        String jwtToken = JWTUtils.sign("daisy", "secret");
-        System.out.println(jwtToken);
-        Date now = Calendar.getInstance().getTime();
-        DecodedJWT decodedJWT = JWT.decode(jwtToken);
-        Date expiresAt = decodedJWT.getExpiresAt();
-        Date issuedAt = decodedJWT.getIssuedAt();
-        System.out.println(decodedJWT.getExpiresAt().before(now));
+    }
+
+    @Test
+    public void initRedisData() {
+        stringRedisTemplate.opsForValue().set("1720000000","435466",30, TimeUnit.MINUTES);
+        String phoneNumber = stringRedisTemplate.opsForValue().get("1720000000");
+        System.out.println(phoneNumber);
     }
 }

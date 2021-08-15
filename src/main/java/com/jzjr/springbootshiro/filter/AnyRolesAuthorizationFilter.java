@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jzjr.springbootshiro.entity.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -18,18 +19,23 @@ public class AnyRolesAuthorizationFilter extends AuthorizationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) throws Exception {
         Subject subject = getSubject(servletRequest, servletResponse);
-        String[] rolesArray = (String[]) o;
-        //没有权限控制,可以访问
-        if (null == rolesArray || rolesArray.length == 0) {
-            return true;
-        }
-        //若当前用户的角色是rolesArray中其中一个，则有权限访问
-        for (String role : rolesArray) {
-            if (subject.hasRole(role)) {
+        if (subject.isAuthenticated()) {
+            Object principal = subject.getPrincipal();
+            PrincipalCollection principals = subject.getPrincipals();
+            String[] rolesArray = (String[]) o;
+            //没有权限控制,可以访问
+            if (null == rolesArray || rolesArray.length == 0) {
                 return true;
             }
+            //若当前用户的角色是rolesArray中其中一个，则有权限访问
+            for (String role : rolesArray) {
+                if (subject.hasRole(role)) {
+                    return true;
+                }
+                return false;
+            }
         }
-        return false;
+            return false;
     }
 
     @Override

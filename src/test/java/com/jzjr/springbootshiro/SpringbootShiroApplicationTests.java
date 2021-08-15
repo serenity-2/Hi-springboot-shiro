@@ -38,8 +38,8 @@ class SpringbootShiroApplicationTests {
 
     @Test
     public void initRedisData() {
-        stringRedisTemplate.opsForValue().set("1720000000","435466",30, TimeUnit.MINUTES);
-        String phoneNumber = stringRedisTemplate.opsForValue().get("1720000000");
+        stringRedisTemplate.opsForValue().set("17200000000","435466",30, TimeUnit.MINUTES);
+        String phoneNumber = stringRedisTemplate.opsForValue().get("17200000000");
         System.out.println(phoneNumber);
     }
 }

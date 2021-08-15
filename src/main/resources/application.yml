@@ -16,9 +16,9 @@ spring:
 
 
   redis:
-    host: 10.20.210.49
-    port: 6380
-    password: ReDis2021
+    host: 127.0.0.1
+    port: 6379
+    password:
     database: 5
 
 

@@ -13,4 +13,6 @@ public interface UserService {
     List<Permission> findPermissionsByRoleId(String id);
 
     String generateToken(String userName);
+
+    User selectUserByPhoneNumber(String phoneNumber);
 }

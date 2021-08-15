@@ -58,4 +58,14 @@ public class UserServiceImpl implements UserService {
         return jwtToken;
     }
 
+    @Override
+    public User selectUserByPhoneNumber(String phoneNumber) {
+        Permission permission = new Permission("1", "article:manager:*", "/article/adminnnn", new Date(), new Date());
+        List<Permission> permissions = Arrays.asList(permission);
+        Role role = new Role("1", "manager", permissions);
+        List<Role> roles = Arrays.asList(role);
+        User user = new User("1", "Daisy", "22f2d99d8d2d4d69bb9d457c747c8c33", "19aaf", roles, new Date(), new Date());
+        return user;
+    }
+
 }

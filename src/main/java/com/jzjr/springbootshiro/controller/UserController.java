@@ -28,9 +28,12 @@ public class UserController {
     @ResponseBody
     public String login(String username, String password, HttpServletRequest request, HttpServletResponse response) {
         Subject subject = SecurityUtils.getSubject();
+        Object principal = subject.getPrincipal();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
         try {
             subject.login(usernamePasswordToken);
+            Object principal2 = subject.getPrincipal();
+            System.out.println(subject.isAuthenticated());
             //生成jwt token
             String jwtToken = userService.generateToken(username);
             //将token放入请求头返回前端,header的key是自定义命名的

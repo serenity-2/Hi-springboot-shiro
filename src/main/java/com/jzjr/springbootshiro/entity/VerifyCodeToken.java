@@ -6,13 +6,13 @@ import org.apache.shiro.authc.AuthenticationToken;
 @Data
 public class VerifyCodeToken implements AuthenticationToken {
 
-    private String phoneNumber;
+    private User user;
 
     private String verityCode;
 
     @Override
     public Object getPrincipal() {
-        return phoneNumber;
+        return user;
     }
 
     @Override

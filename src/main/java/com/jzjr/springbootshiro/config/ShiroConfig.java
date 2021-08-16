@@ -45,7 +45,7 @@ public class ShiroConfig {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
         chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");
         chainDefinition.addPathDefinition("/user/verityCode/login", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/article/admin","perms[article:manager]");
+//        chainDefinition.addPathDefinition("/article/admin","perms[article:manager]");
         //做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
 //        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
 //        chainDefinition.addPathDefinition("/image/**", "anon");

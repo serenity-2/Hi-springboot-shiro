@@ -57,8 +57,8 @@ public class VerifyRealm extends AuthorizingRealm {
             if (!CollectionUtils.isEmpty(roles)) {
                 roles.forEach(role -> {
                     simpleAuthorizationInfo.addRole(role.getName());
-                    List<Permission> permissions = userService.findPermissionsByRoleId(role.getId());
-                    permissions.forEach(permission -> {
+//                    List<Permission> permissions = userService.findPermissionsByRoleId(role.getId());
+                    role.getPermissions().forEach(permission -> {
                         simpleAuthorizationInfo.addStringPermission(permission.getName());
                     });
                 });
@@ -72,11 +72,8 @@ public class VerifyRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        VerifyCodeToken verifyCodeToken = (VerifyCodeToken) token;
-        String phoneNumber = verifyCodeToken.getPhoneNumber();
-        String verityCode = verifyCodeToken.getVerityCode();
-        String realVerityCode = stringRedisTemplate.opsForValue().get(phoneNumber);
-        User user = this.userService.selectUserByPhoneNumber(phoneNumber);
+        User user = (User) token.getPrincipal();
+        String realVerityCode = (String) stringRedisTemplate.opsForHash().get(user.getUserName(),"verifyCode");
         return new SimpleAuthenticationInfo(user,realVerityCode,this.getName());
     }
 }

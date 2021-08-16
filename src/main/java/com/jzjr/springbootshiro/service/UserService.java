@@ -15,4 +15,6 @@ public interface UserService {
     String generateToken(String userName);
 
     User selectUserByPhoneNumber(String phoneNumber);
+
+    void updateOpenIdByUserId(String id);
 }

@@ -10,9 +10,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
@@ -34,12 +32,33 @@ class SpringbootShiroApplicationTests {
 
     @Test
     public void test(){
+
     }
 
     @Test
-    public void initRedisData() {
-        stringRedisTemplate.opsForValue().set("17200000000","435466",30, TimeUnit.MINUTES);
-        String phoneNumber = stringRedisTemplate.opsForValue().get("17200000000");
+    public void initRedisData() throws InterruptedException {
+//        stringRedisTemplate.opsForValue().set("17200000000","435466",30, TimeUnit.MINUTES);
+        Map<String, Object> map = new HashMap<>();
+        map.put("phoneNumber","17200000000");
+        map.put("verifyCode","432566");
+        map.put("loginCount","1");
+        stringRedisTemplate.opsForHash().putAll("Daisy",map);
+//        stringRedisTemplate.expire("Daisy",30,TimeUnit.MINUTES);
+        String phoneNumber = (String) stringRedisTemplate.opsForHash().get("Daisy","verifyCode");
         System.out.println(phoneNumber);
+        Thread.sleep(3000);
+        //获取key的过期时间，默认单位为秒，没有设置过期时间则返回-1，不存在key则返回-2
+        Long expireTime = stringRedisTemplate.opsForHash().getOperations().getExpire("Daisy",TimeUnit.MINUTES);
+        System.out.println(expireTime);
+    }
+
+    @Test
+    public void initLockAccount() {
+        stringRedisTemplate.opsForValue().set("LOCKED_" + "17211111111", "17211111111", 20, TimeUnit.MINUTES);
+    }
+
+    @Test
+    public void initSuccessAccount(){
+        stringRedisTemplate.opsForValue().set("SUCCESS_1_Daisy_17222222222","free_login", 72*60, TimeUnit.MINUTES);
     }
 }

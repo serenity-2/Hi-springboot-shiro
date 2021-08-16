@@ -10,4 +10,6 @@ public class MessageVerityDTO {
     String phoneNumber;
     @NotNull(message = "验证码不能为空")
     String verityCode;
+    @NotNull(message = "用户openId不能为空")
+    String wxOpenId;
 }

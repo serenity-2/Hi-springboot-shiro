@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         Permission permission = new Permission("1", "article:admin:*", "/article/admin/", new Date(), new Date());
         Role role = new Role("1", "admin", Arrays.asList(permission));
         List<Role> roles = Arrays.asList(role);
-        User daisy = new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97", roles, new Date(), new Date());
+        User daisy = new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97","17200000000","WX1234", roles, new Date(),new Date(), new Date());
         userMap.put("Daisy",daisy);
         return (User) userMap.get(principal);
     }
@@ -53,19 +53,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String generateToken(String userName) {
-        User user = new User("1", "Daisy", "22f2d99d8d2d4d69bb9d457c747c8c33", "19aaf", null, new Date(), new Date());
+        User user = new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97","17200000000","WX1234", null, new Date(),new Date(), new Date());
         String jwtToken = JWTUtils.sign(userName, user.getSalt());
         return jwtToken;
     }
 
     @Override
     public User selectUserByPhoneNumber(String phoneNumber) {
-        Permission permission = new Permission("1", "article:manager:*", "/article/adminnnn", new Date(), new Date());
+        Permission permission = new Permission("1", "article:admin:*", "/article/adminnnn", new Date(), new Date());
         List<Permission> permissions = Arrays.asList(permission);
         Role role = new Role("1", "manager", permissions);
         List<Role> roles = Arrays.asList(role);
-        User user = new User("1", "Daisy", "22f2d99d8d2d4d69bb9d457c747c8c33", "19aaf", roles, new Date(), new Date());
+        User user =new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97","17200000000","WX1234", roles, new Date(),new Date(), new Date());
         return user;
+    }
+
+    @Override
+    public void updateOpenIdByUserId(String id) {
+
     }
 
 }

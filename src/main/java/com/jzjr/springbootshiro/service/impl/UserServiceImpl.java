@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
         List<Permission> permissions = Arrays.asList(permission);
         Role role = new Role("1", "manager", permissions);
         List<Role> roles = Arrays.asList(role);
-        User user =new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97","17200000000","WX1234", roles, new Date(),new Date(), new Date());
+        User user =new User("1", "Daisy", "9964da6b9a5afb35ff9c81cc4261f1fe", "3ff97","17200000000","WX1234", roles, null,new Date(), new Date());
         return user;
     }
 

@@ -43,8 +43,10 @@ public class ShiroConfig {
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
+        //anno表示无需认证即可访问，authc表示需要认证才能访问
         chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");
-        chainDefinition.addPathDefinition("/user/verityCode/login", "noSessionCreation,anon");
+        //noSessionCreation表示该接口禁止创建session
+        chainDefinition.addPathDefinition("/user/verityCode/login", "anon");
 //        chainDefinition.addPathDefinition("/article/admin","perms[article:manager]");
         //做用户认证，permissive参数的作用是当token无效时也允许请求访问，不会返回鉴权未通过的错误
 //        chainDefinition.addPathDefinition("/logout", "noSessionCreation,authcToken[permissive]");
@@ -122,14 +124,15 @@ public class ShiroConfig {
     protected AnyRolesAuthorizationFilter createRolesFilter(){
         return new AnyRolesAuthorizationFilter();
     }
+
     /**
      * 由于jwt无状态，这里需要禁用session，不保证用户登录状态，每次请求都重新认证
      * 需要注意的是，如果用户代码里调用Subject.getSession()还是可以用session，如果要完全禁用，要配合下面的noSessionCreation的Filter来实现
      */
-    @Bean
-    protected SessionStorageEvaluator sessionStorageEvaluator() {
-        DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
-        sessionStorageEvaluator.setSessionStorageEnabled(false);
-        return sessionStorageEvaluator;
-    }
+//    @Bean
+//    protected SessionStorageEvaluator sessionStorageEvaluator() {
+//        DefaultWebSessionStorageEvaluator sessionStorageEvaluator = new DefaultWebSessionStorageEvaluator();
+//        sessionStorageEvaluator.setSessionStorageEnabled(true);
+//        return sessionStorageEvaluator;
+//    }
 }

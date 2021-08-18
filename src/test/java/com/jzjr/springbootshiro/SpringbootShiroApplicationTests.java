@@ -41,8 +41,8 @@ class SpringbootShiroApplicationTests {
         Map<String, Object> map = new HashMap<>();
         map.put("phoneNumber","17200000000");
         map.put("verifyCode","432566");
-        map.put("loginCount","1");
-        stringRedisTemplate.opsForHash().putAll("Daisy",map);
+        map.put("loginCount","0");
+        stringRedisTemplate.opsForHash().putAll("Daisy_"+"17255555555",map);
 //        stringRedisTemplate.expire("Daisy",30,TimeUnit.MINUTES);
         String phoneNumber = (String) stringRedisTemplate.opsForHash().get("Daisy","verifyCode");
         System.out.println(phoneNumber);
@@ -54,11 +54,11 @@ class SpringbootShiroApplicationTests {
 
     @Test
     public void initLockAccount() {
-        stringRedisTemplate.opsForValue().set("LOCKED_" + "17211111111", "17211111111", 20, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set("LOCKED_" + "Daisy_17211111111", "locked", 20, TimeUnit.MINUTES);
     }
 
     @Test
     public void initSuccessAccount(){
-        stringRedisTemplate.opsForValue().set("SUCCESS_1_Daisy_17222222222","free_login", 72*60, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set("FREELOGIN_1_Daisy_17222222222","free_login", 72*60, TimeUnit.MINUTES);
     }
 }

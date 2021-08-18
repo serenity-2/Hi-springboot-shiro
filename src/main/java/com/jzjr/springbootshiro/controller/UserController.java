@@ -6,6 +6,7 @@ import com.jzjr.springbootshiro.dto.MessageVerityDTO;
 import com.jzjr.springbootshiro.entity.Result;
 import com.jzjr.springbootshiro.entity.User;
 import com.jzjr.springbootshiro.entity.VerifyCodeToken;
+import com.jzjr.springbootshiro.exception.BusinessException;
 import com.jzjr.springbootshiro.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -78,9 +80,10 @@ public class UserController {
 
     @RequestMapping("/verityCode/login")
     @ResponseBody
-    public Result verityCodeLogin(@RequestBody MessageVerityDTO messageVerityDTO) {
+    public Result verityCodeLogin(@Valid @RequestBody MessageVerityDTO messageVerityDTO) {
         // 查询账号是否已被锁定
         Long expireTime = stringRedisTemplate.opsForValue().getOperations().getExpire("LOCKED" + messageVerityDTO.getPhoneNumber(), TimeUnit.MINUTES);
+        //没有设置过期时间返回-1，不存在key返回-2
         if (expireTime != -2) {
             return new Result().setCode(200).setMessage("该账号被锁定请" + expireTime + "分钟后再试");
         }
@@ -91,20 +94,25 @@ public class UserController {
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(token);
+            stringRedisTemplate.delete("LOCKED"+messageVerityDTO.getPhoneNumber());
+            stringRedisTemplate.opsForValue().set(user.getUserName(),"0");
+            //设置登录有效期，单位为毫秒,默认30分钟
+            subject.getSession().setTimeout(60 * 1000);
         } catch (AuthenticationException e) {
             log.error("认证失败，请稍后重试:{}", e.getMessage());
-            Object loginCount = stringRedisTemplate.opsForHash().get(user.getUserName(), "loginCount");
-            int count = loginCount == null ? 0 : (int) loginCount;
+            String loginCount = (String) stringRedisTemplate.opsForHash().get(user.getUserName(), "loginCount");
+            Integer count = loginCount == null ? 0 : Integer.parseInt(loginCount);
             if (count < 5) {
-                stringRedisTemplate.opsForHash().put(user.getUserName(), "loginCount", count++);
-                return new Result<>().setCode(500).setMessage("认证失败，请稍后重试:" + e.getMessage());
+                count = count + 1;
+                stringRedisTemplate.opsForHash().put(user.getUserName(), "loginCount", String.valueOf(count));
+                return new Result<>().setCode(500).setMessage("认证失败，请稍后重试");
             } else {
                 //登录失败连续超过5次，该账号锁定20分钟，期间不能再次登录
                 stringRedisTemplate.opsForValue().set("LOCKED" + messageVerityDTO.getPhoneNumber(), messageVerityDTO.getPhoneNumber(), 20, TimeUnit.MINUTES);
-                return new Result<>().setCode(500).setMessage("该账户已经连续失败5次,请20分钟后重试");
+                return new Result<>().setCode(500).setMessage("该账户已经连续登录失败5次,请20分钟后重试");
             }
         }
-            //判断用户是否是第一次登录，还需人脸识别认证
+            //判断用户是否是第一次登录，第一次登录还需人脸识别认证
             Date loginDate = user.getLoginDate();
             if (null == loginDate) {
                 //需要人脸识别
@@ -137,6 +145,7 @@ public class UserController {
     @RequestMapping("/faceIdentification")
     public void faceIdentification() {
         //TODO
+        throw new BusinessException(500,"人脸识别失败");
     }
 
     /**
@@ -146,7 +155,7 @@ public class UserController {
         //查询当前用户是否存在
         User user = userService.selectUserByPhoneNumber(messageVerityDTO.getPhoneNumber());
         if (BeanUtil.isEmpty(user)) {
-            return new Result().setCode(500).setMessage("当前用户不存在,请下载吉致管家注册登录");
+            return new Result().setCode(200).setMessage("当前用户不存在,请下载吉致管家注册登录");
         }
         //调用短信验证码接口 todo
         return null;

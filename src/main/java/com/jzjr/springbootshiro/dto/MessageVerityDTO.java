@@ -2,14 +2,14 @@ package com.jzjr.springbootshiro.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 public class MessageVerityDTO {
-    @NotNull(message = "手机号不能为空")
+    @NotEmpty(message = "手机号不能为空")
     String phoneNumber;
-    @NotNull(message = "验证码不能为空")
+    @NotEmpty(message = "验证码不能为空")
     String verityCode;
-    @NotNull(message = "用户openId不能为空")
+    @NotEmpty(message = "用户openId不能为空")
     String wxOpenId;
 }

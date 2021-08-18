@@ -21,7 +21,13 @@ public class User {
 
     private String salt;
 
+    private String phoneNumber;
+
+    private String WxOpenId;
+
     private List<Role>roles;
+
+    private Date loginDate;
 
     private Date createdDate;
 

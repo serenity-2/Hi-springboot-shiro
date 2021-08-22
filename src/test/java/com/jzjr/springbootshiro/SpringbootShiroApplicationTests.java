@@ -61,4 +61,5 @@ class SpringbootShiroApplicationTests {
     public void initSuccessAccount(){
         stringRedisTemplate.opsForValue().set("FREELOGIN_1_Daisy_17222222222","free_login", 72*60, TimeUnit.MINUTES);
     }
+
 }

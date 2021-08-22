@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
-<mapper namespace="com.jzjr.springbootshiro.dao.UserDao">
+<mapper namespace="UserMapper">
     <resultMap id="UserMap" type="com.jzjr.springbootshiro.entity.User">
         <result column="ID" property="id"/>
         <result column="USER_NAME" property="userName"/>

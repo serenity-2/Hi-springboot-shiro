@@ -37,13 +37,16 @@ public class ShiroConfig {
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
 //        filters.put("authcToken", createRolesFilter());
 //        filters.put("anyRole", createRolesFilter());
+
+//        filters.put("authcToken", createJwtFilter(userService));
+
         return shiroFilterFactoryBean;
     }
 
     @Bean
     protected ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
-        //anno表示无需认证即可访问，authc表示需要认证才能访问
+        //anno表示无需认证即可访问，authc表示需要认证才能访问（禁用session后就不能使用authc）
         chainDefinition.addPathDefinition("/user/login", "noSessionCreation,anon");
         //noSessionCreation表示该接口禁止创建session
         chainDefinition.addPathDefinition("/user/verityCode/login", "anon");
@@ -54,9 +57,10 @@ public class ShiroConfig {
         //只允许admin或manager角色的用户访问
 //        chainDefinition.addPathDefinition("/article/admin", "noSessionCreation,anyRole[admin,manager]");
 //        chainDefinition.addPathDefinition("/article/list", "noSessionCreation,authcToken");
+//        chainDefinition.addPathDefinition("/article/**", "noSessionCreation,authcToken");
 //        chainDefinition.addPathDefinition("/article/*", "noSessionCreation,authcToken[permissive]");
         // 默认进行用户鉴权
-//        chainDefinition.addPathDefinition("/**", "noSessionCreation,authc");
+        chainDefinition.addPathDefinition("/**", "authc");
         return chainDefinition;
     }
 
@@ -64,7 +68,7 @@ public class ShiroConfig {
     public DefaultWebSecurityManager getDefaultWebSecurityManager(UserService userService) {
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
 //        defaultWebSecurityManager.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
-        defaultWebSecurityManager.setRealm(getVerifyRealm(userService));
+        defaultWebSecurityManager.setRealm(getVerifyRealm());
 //        defaultWebSecurityManager.setCacheManager(new RedisCacheManager());
         return defaultWebSecurityManager;
     }
@@ -98,8 +102,8 @@ public class ShiroConfig {
      * 用于短信验证码认证的realm
      */
     @Bean
-    public Realm getVerifyRealm(UserService userService) {
-        VerifyRealm verifyRealm = new VerifyRealm(userService);
+    public Realm getVerifyRealm() {
+        VerifyRealm verifyRealm = new VerifyRealm();
         return verifyRealm;
     }
 
@@ -111,15 +115,15 @@ public class ShiroConfig {
         ModularRealmAuthenticator authenticator = new ModularRealmAuthenticator();
         //设置两个Realm，一个用于用户登录验证和访问权限获取；一个用于jwt token的认证
 //        authenticator.setRealms(Arrays.asList(getJwtRealm(userService), getDbRealm(userService)));
-        authenticator.setRealms(Arrays.asList(getVerifyRealm(userService)));
+        authenticator.setRealms(Arrays.asList(getVerifyRealm()));
         //设置多个realm认证策略，一个成功即跳过其它的
         authenticator.setAuthenticationStrategy(new FirstSuccessfulStrategy());
         return authenticator;
     }
 
-//    public JwtAuthFilter createJwtFilter(UserService userService) {
-//        return new JwtAuthFilter(userService);
-//    }
+    public JwtAuthFilter createJwtFilter(UserService userService) {
+        return new JwtAuthFilter(userService);
+    }
 
     protected AnyRolesAuthorizationFilter createRolesFilter(){
         return new AnyRolesAuthorizationFilter();

@@ -145,6 +145,7 @@ public class UserController {
     @RequestMapping("/faceIdentification")
     public void faceIdentification() {
         //TODO
+        //https://developers.weixin.qq.com/community/business/doc/000442d352c1202bd498ecb105c00d
         throw new BusinessException(500,"人脸识别失败");
     }
 

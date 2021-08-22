@@ -1,18 +1,19 @@
 package com.jzjr.springbootshiro.shiro.cache;
 
+import com.jzjr.springbootshiro.utils.ApplicationContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Set;
 
 @Slf4j
 public class RedisCache<K, V> implements Cache<K, V> {
-    @Autowired
-    private RedisTemplate redisTemplate;
     private String cacheName;
 
     public RedisCache(String s) {
@@ -21,43 +22,50 @@ public class RedisCache<K, V> implements Cache<K, V> {
 
     @Override
     public V get(K k) throws CacheException {
-        log.info("key:\t"+k.toString());
-        return (V) redisTemplate.opsForHash().get(this.cacheName,k.toString());
+        log.info("cacheName:\t"+cacheName+"\tkey:\t"+k.toString());
+        return (V) getRedisTemplate().opsForHash().get(this.cacheName,k.toString());
     }
 
     @Override
     public V put(K k, V v) throws CacheException {
-        log.info("key:\t"+k.toString()+"\tvalue:\t"+v);
-        redisTemplate.opsForHash().put(this.cacheName,k.toString(),v);
+        log.info("cacheName:\t"+"\tkey:\t"+k.toString()+"\tvalue:\t"+v);
+        getRedisTemplate().opsForHash().put(this.cacheName,k.toString(),v);
         return null;
     }
 
     @Override
     public V remove(K k) throws CacheException {
-        log.info("removekey:\t"+k.toString());
-        return (V) redisTemplate.opsForHash().delete(this.cacheName,k.toString());
+        log.info("cacheName:\t"+"\tremovekey:\t"+k.toString());
+        return (V) getRedisTemplate().opsForHash().delete(this.cacheName,k.toString());
     }
 
     @Override
     public void clear() throws CacheException {
         log.info("remove cacheName\t"+cacheName);
-        redisTemplate.delete(this.cacheName);
+        getRedisTemplate().delete(this.cacheName);
     }
     @Override
     public int size() {
         log.info("size:\t"+size());
-        return redisTemplate.opsForHash().size(this.cacheName).intValue();
+        return getRedisTemplate().opsForHash().size(this.cacheName).intValue();
     }
 
     @Override
     public Set<K> keys() {
-        log.info("keys:\t"+redisTemplate.opsForHash().keys(this.cacheName));
-        return redisTemplate.opsForHash().keys(this.cacheName);
+        log.info("keys:\t"+getRedisTemplate().opsForHash().keys(this.cacheName));
+        return getRedisTemplate().opsForHash().keys(this.cacheName);
     }
 
     @Override
     public Collection<V> values() {
-        log.info("values:\t"+redisTemplate.opsForHash().values(this.cacheName));
-        return redisTemplate.opsForHash().values(this.cacheName);
+        log.info("values:\t"+getRedisTemplate().opsForHash().values(this.cacheName));
+        return getRedisTemplate().opsForHash().values(this.cacheName);
+    }
+
+    public RedisTemplate getRedisTemplate(){
+        RedisTemplate redisTemplate = (RedisTemplate) ApplicationContextUtils.getBean("redisTemplate");
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        return redisTemplate;
     }
 }

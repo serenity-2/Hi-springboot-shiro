@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jzjr.springbootshiro.entity.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authz.AuthorizationFilter;
@@ -18,7 +19,9 @@ import java.io.IOException;
 public class AnyRolesAuthorizationFilter extends AuthorizationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) throws Exception {
-        Subject subject = getSubject(servletRequest, servletResponse);
+//        Subject subject = getSubject(servletRequest, servletResponse);
+        Subject subject = SecurityUtils.getSubject();
+        Object principal1 = subject.getPrincipal();
         if (subject.isAuthenticated()) {
             Object principal = subject.getPrincipal();
             PrincipalCollection principals = subject.getPrincipals();

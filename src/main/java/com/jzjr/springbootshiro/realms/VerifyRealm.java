@@ -1,6 +1,7 @@
 package com.jzjr.springbootshiro.realms;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.jzjr.springbootshiro.dao.UserMapper;
 import com.jzjr.springbootshiro.entity.Permission;
 import com.jzjr.springbootshiro.entity.Role;
 import com.jzjr.springbootshiro.entity.User;
@@ -17,22 +18,19 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Slf4j
+@Component
 public class VerifyRealm extends AuthorizingRealm {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
-
-    protected UserService userService;
-
-    public VerifyRealm(UserService userService) {
-        this.userService = userService;
-        this.setCredentialsMatcher(new SimpleCredentialsMatcher());
-    }
+    @Resource
+    protected UserMapper userMapper;
 
     /**
      * 该方法返回true则执行该realm
@@ -73,7 +71,8 @@ public class VerifyRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         User user = (User) token.getPrincipal();
-        String realVerityCode = (String) stringRedisTemplate.opsForHash().get(user.getUserName(),"verifyCode");
+        String realVerityCode = (String) stringRedisTemplate.opsForHash().get(user.getUserName()+"_"+user.getPhoneNumber(),"verifyCode");
+        System.out.println(user.getUserName()+"_"+user.getPhoneNumber());
         return new SimpleAuthenticationInfo(user,realVerityCode,this.getName());
     }
 }

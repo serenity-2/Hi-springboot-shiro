@@ -1,6 +1,6 @@
 package com.jzjr.springbootshiro.service.impl;
 
-import com.jzjr.springbootshiro.dao.UserDao;
+import com.jzjr.springbootshiro.dao.UserMapper;
 import com.jzjr.springbootshiro.entity.Permission;
 import com.jzjr.springbootshiro.entity.Role;
 import com.jzjr.springbootshiro.entity.User;
@@ -16,7 +16,7 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private UserDao userDao;
+    private UserMapper userDao;
 
     @Override
     public void register(String username, String password) {
